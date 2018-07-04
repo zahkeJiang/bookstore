@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookListServlet extends HttpServlet {
-    Status status;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -28,6 +27,7 @@ public class BookListServlet extends HttpServlet {
         resp.setHeader("content-type","text/html;charset=UTF-8");
         PrintWriter writer = resp.getWriter();
         Connection conn = null;
+        Status status;
         try {
             conn = DBUtil.getConnection();
             ResultSet resultSet = conn
@@ -47,14 +47,11 @@ public class BookListServlet extends HttpServlet {
                 status = Status.success().add(books);
             }
             if (!(books.size()>0)){
-                status = Status.fail(GlobalStatus.NO_DATA, "数据出错");
+                status = Status.fail(GlobalStatus.NO_DATA, "没有数据");
             }
         } catch (SQLException e) {
             e.printStackTrace();
             status = Status.fail(GlobalStatus.SQL_ERROR, "查询异常");
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//            status = Status.fail(GlobalStatus.SERVER_ERROR, "Md5加密出错");
         } finally {
             writer.println(GsonUtil.getJsonString(status));
             writer.flush();
